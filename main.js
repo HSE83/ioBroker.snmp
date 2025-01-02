@@ -1,8 +1,8 @@
 /**
  *
  * snmp adapter,
- *		copyright CTJaeger 2017, MIT
- *		copyright McM1957 2022, MIT
+ *              copyright CTJaeger 2017, MIT
+ *              copyright McM1957 2022, MIT
  *
  */
 
@@ -52,7 +52,7 @@
 /*
  * description if major internal objects
  *
- *	CTXs		object (array) of CTX objectes
+ *      CTXs            object (array) of CTX objectes
  *
  *  CTX         object for one signle device
  *    containing
@@ -119,8 +119,8 @@ let didInstall = false;
 // #################### global variables ####################
 let adapter;    // adapter instance - @type {ioBroker.Adapter}
 
-const CTXs = [];		    // see description at header of file
-let g_isConnected = false; 	// local copy of info.connection state
+const CTXs = [];                    // see description at header of file
+let g_isConnected = false;      // local copy of info.connection state
 let g_connUpdateTimer = null;
 let g_chunkSize = 3;         // maximum number of OIDs per request
 
@@ -142,24 +142,24 @@ function startAdapter(options) {
         // If you need to react to object changes, uncomment the following method.
         // You also need to subscribe to the objects with `adapter.subscribeObjects`, similar to `adapter.subscribeStates`.
         // objectChange: (id, obj) => {
-        // 	if (obj) {
-        // 		// The object was changed
-        // 		adapter.log.info(`object ${id} changed: ${JSON.stringify(obj)}`);
-        // 	} else {
-        // 		// The object was deleted
-        // 		adapter.log.info(`object ${id} deleted`);
-        // 	}
+        //      if (obj) {
+        //              // The object was changed
+        //              adapter.log.info(`object ${id} changed: ${JSON.stringify(obj)}`);
+        //      } else {
+        //              // The object was deleted
+        //              adapter.log.info(`object ${id} deleted`);
+        //      }
         // },
 
         // stateChange is called if a subscribed state changes
         // stateChange: (id, state) => {
-        //	if (state) {
-        //		// The state was changed
-        //		adapter.log.info(`state ${id} changed: ${state.val} (ack = ${state.ack})`);
-        //	} else {
-        //		// The state was deleted
-        //		adapter.log.info(`state ${id} deleted`);
-        //	}
+        //      if (state) {
+        //              // The state was changed
+        //              adapter.log.info(`state ${id} changed: ${state.val} (ack = ${state.ack})`);
+        //      } else {
+        //              // The state was deleted
+        //              adapter.log.info(`state ${id} deleted`);
+        //      }
         //},
 
         // If you need to accept messages in your adapter, uncomment the following block.
@@ -168,15 +168,15 @@ function startAdapter(options) {
         //  * Using this method requires "common.messagebox" property to be set to true in io-package.json
         //  */
         // message: (obj) => {
-        // 	if (typeof obj === 'object' && obj.message) {
-        // 		if (obj.command === 'send') {
-        // 			// e.g. send email or pushover or whatever
-        // 			adapter.log.info('send command');
+        //      if (typeof obj === 'object' && obj.message) {
+        //              if (obj.command === 'send') {
+        //                      // e.g. send email or pushover or whatever
+        //                      adapter.log.info('send command');
 
-        // 			// Send response in callback if required
-        // 			if (obj.callback) adapter.sendTo(obj.from, obj.command, 'Message received', obj.callback);
-        // 		}
-        // 	}
+        //                      // Send response in callback if required
+        //                      if (obj.callback) adapter.sendTo(obj.from, obj.command, 'Message received', obj.callback);
+        //              }
+        //      }
         // },
     }));
 
@@ -192,11 +192,11 @@ function startAdapter(options) {
 /**
  * Convert name to id
  *
- *		This utility routine replaces all forbidden chars and the characters '-' and any whitespace
- *		with an underscore ('_').
+ *              This utility routine replaces all forbidden chars and the characters '-' and any whitespace
+ *              with an underscore ('_').
  *
- * @param   {string}    pName 	name of an object
- * @return  {string} 		    name of the object with all forbidden chars replaced
+ * @param   {string}    pName   name of an object
+ * @return  {string}                name of the object with all forbidden chars replaced
  *
  */
 function name2id(pName) {
@@ -206,10 +206,10 @@ function name2id(pName) {
 /**
  * convert ip to ipStr
  *
- *		This utility routine replaces any dots within an ip address with an underscore ('_').
+ *              This utility routine replaces any dots within an ip address with an underscore ('_').
  *
- * @param {string} 	ip 	ip string with standard foematting
- * @return {string} 	ipStr with all dots removed and useable as identifier
+ * @param {string}      ip      ip string with standard foematting
+ * @return {string}     ipStr with all dots removed and useable as identifier
  *
  */
 function ip2ipStr(ip) {
@@ -222,9 +222,9 @@ function ip2ipStr(ip) {
 /**
  * initObject - create or reconfigure single object
  *
- *		creates object if it does not exist
- *		overrides object data otherwise
- *		waits for action to complete using await
+ *              creates object if it does not exist
+ *              overrides object data otherwise
+ *              waits for action to complete using await
  *
  * @param {obj} object structure
  * @return
@@ -319,7 +319,7 @@ async function initOidObjects(pId, pOid) {
             type: 'state',
             common: {
                 name: pId,
-                //					write: !!OID.write, //## TODO
+                //                                      write: !!OID.write, //## TODO
                 read: true,
                 type: 'string',
                 role: 'value'
@@ -351,6 +351,10 @@ async function initAllObjects() {
                 await initOidObjects(CTXs[ii].chunks[cc].ids[jj], CTXs[ii].chunks[cc].oids[jj]);
             }
         }
+
+                for (let cc = 0; cc < CTXs[ii].specials.length; cc++) {
+                        await initOidObjects(CTXs[ii].specials[cc].id, CTXs[ii].specials[cc].oid);
+                }
     }
 }
 
@@ -382,7 +386,7 @@ async function onSessionClose(pCTX) {
 /**
  * onSessionError - callback called whenever a session encounters an error
  *
- * @param {CTX object} 	pCTX    CTX object
+ * @param {CTX object}  pCTX    CTX object
  * @param {object}      pErr    error object
  * @return
  *
@@ -559,7 +563,7 @@ function processVarbind(pCTX, pChunkIdx, pId, pIdx, pVarbind) {
                 valStr = pVarbind.value.toString();
             } else {
                 valStr = JSON.stringify(pVarbind.value);
-          	}
+                }
             break;
         }
         case snmp.ObjectType.Null:{
@@ -749,6 +753,31 @@ function readChunkOids(pCTX, pIdx) {
     });
 }
 
+function readOidTable(pCTX, specInfo) {
+    adapter.log.debug('readOidTable - device "' + pCTX.name + '" (' + pCTX.ipAddr + '), special type ' + specInfo.special + ' id ' + specInfo.id);
+
+    return new Promise((resolve,_reject)=>{
+        const session = pCTX.session;
+        const id = pCTX.id;
+
+        if (! session) {
+            // issue #151 - the session object might get deleted during prosessing of get loop
+            adapter.log.debug( 'session vanished, skipping get oparation');
+            resolve();
+        } else {
+            let storeAtId = specInfo.id;
+            session.table (specInfo.oid, 50, function(error, table) {
+                if (error) {
+                    adapter.log.error(error.toString());
+                } else {
+                    adapter.setState(storeAtId, JSON.stringify(table), true);
+                }
+                resolve();
+            });
+        }
+    });
+}
+
 /**
  * readOids - read all oids from a specific target device
  *
@@ -766,6 +795,15 @@ async function readOids(pCTX) {
         adapter.log.debug('[' + id + '] processing oid chunk index ' + cc );
         await readChunkOids( pCTX, cc);
         adapter.log.debug('[' + id + '] processing oid chunk index ' + cc + ' completed' );
+    }
+
+        // Read special OIDs from device (tables, subtrees)
+    for (let si = 0; si < pCTX.specials.length; si++) {
+                if (pCTX.specials[si].special == 'T') {
+                        await readOidTable(pCTX, pCTX.specials[si]);
+                } else {
+                                // Not supported, yet
+                }
     }
 }
 
@@ -836,6 +874,7 @@ function validateConfig() {
         oid.oidGroup = (oid.oidGroup||'').trim();
         oid.oidName = (oid.oidName||'').trim();
         oid.oidOid = (oid.oidOid||'').trim().replace(/^\./, '');
+                oid.oidSpecial = '';
 
         const oidGroup = oid.oidGroup;
 
@@ -865,8 +904,19 @@ function validateConfig() {
             ok = false;
         }
 
+                if (oid.oidOid.endsWith('.T')) {
+                        oid.oidOid = oid.oidOid.replace('.T', '');
+                        oid.oidSpecial = 'T';
+                        adapter.log.debug("Corrected T-OID to " + oid.oidOid);
+                } else if (oid.oidOid.endsWith('.*')) {
+                        oid.oidOid = oid.oidOid.replace('.*', '');
+                        oid.oidSpecial = '*';
+                        adapter.log.debug("Corrected *-OID to " + oid.oidOid);
+                }
+
+                // Also accept OIDs ending with * (read subtree) or T (read table)
         if (! /^\d+(\.\d+)*$/.test(oid.oidOid)) {
-            adapter.log.error('oid "' + oid.oidOid + '" has invalid format, please correct configuration.');
+                        adapter.log.error('oid "' + oid.oidOid + '" has invalid format, please correct configuration.');
             ok = false;
         }
 
@@ -1081,16 +1131,16 @@ function validateConfig() {
  * @param
  * @return
  *
- *	CTX		object containing data for one device
- *			it has the following attributes
- *		ip			string 	ip address of target device
- *		ipStr		string	ip address of target device with invalid chars removed
- *		OIDs		array of OID objects
- *		oids		array of oid strings (used for snmp call)
- *		ids			array of id strings (index syncet o oids array)
- * 		authId 	    string 	snmp community (snmp V1, V2 only)
- *		initialized	boolean	true if connection is initialized
- *		inactive	boolean	true if connection to device is active
+ *      CTX             object containing data for one device
+ *                      it has the following attributes
+ *              ip                      string  ip address of target device
+ *              ipStr           string  ip address of target device with invalid chars removed
+ *              OIDs            array of OID objects
+ *              oids            array of oid strings (used for snmp call)
+ *              ids                     array of id strings (index syncet o oids array)
+ *              authId      string      snmp community (snmp V1, V2 only)
+ *              initialized     boolean true if connection is initialized
+ *              inactive        boolean true if connection to device is active
  */
 function setupContices() {
     adapter.log.debug('setupContices - initializing contices');
@@ -1177,6 +1227,7 @@ function setupContices() {
         //        CTXs[jj].oids = [];
         //        CTXs[jj].ids = [];
         CTXs[jj].chunks = [];
+                CTXs[jj].specials = [];
 
         CTXs[jj].pollTimer = null;  // poll intervall timer
         CTXs[jj].session = null;    // snmp session
@@ -1193,24 +1244,33 @@ function setupContices() {
             if (dev.devOidGroup != oid.oidGroup) continue;
 
             const id = CTXs[jj].id + '.' + name2id(oid.oidName);
-            if (cCnt <= 0 )
-            {
-                cIdx++;
-                CTXs[jj].chunks.push([]);
-                CTXs[jj].chunks[cIdx].OIDs = [];
-                CTXs[jj].chunks[cIdx].oids = [];
-                CTXs[jj].chunks[cIdx].ids = [];
-                cCnt = g_chunkSize;
-                adapter.log.debug('       oid chunk index ' + cIdx + ' created');
+            if (oid.oidSpecial) {
+                CTXs[jj].specials.push({
+                    'id': id,
+                    'oid': oid.oidOid,
+                    'special': oid.oidSpecial,
+                });
+                //adapter.log.info("Creating special: " + id + " at oid " + oid.oidOid);
+                //adapter.log.info(JSON.stringify(CTXs[jj].specials));
+            } else {
+                if (cCnt <= 0 )
+                {
+                    cIdx++;
+                    CTXs[jj].chunks.push([]);
+                    CTXs[jj].chunks[cIdx].OIDs = [];
+                    CTXs[jj].chunks[cIdx].oids = [];
+                    CTXs[jj].chunks[cIdx].ids = [];
+                    cCnt = g_chunkSize;
+                    adapter.log.debug('       oid chunk index ' + cIdx + ' created');
+                }
+                //            CTXs[jj].oids.push(oid.oidOid);
+                //            CTXs[jj].ids.push(id);
+                //            CTXs[jj].OIDs.push(oid);
+                CTXs[jj].chunks[cIdx].oids.push(oid.oidOid);
+                CTXs[jj].chunks[cIdx].ids.push(id);
+                CTXs[jj].chunks[cIdx].OIDs.push(oid);
+                cCnt--;
             }
-            //            CTXs[jj].oids.push(oid.oidOid);
-            //            CTXs[jj].ids.push(id);
-            //            CTXs[jj].OIDs.push(oid);
-            CTXs[jj].chunks[cIdx].oids.push(oid.oidOid);
-            CTXs[jj].chunks[cIdx].ids.push(id);
-            CTXs[jj].chunks[cIdx].OIDs.push(oid);
-            cCnt--;
-
             adapter.log.debug('       oid "' + oid.oidOid + '" (' + id + ')');
         }
 
@@ -1301,7 +1361,7 @@ async function onReady() {
 /**
  * onUnload - called when adapter shuts down
  *
- * @param {callback} callback 	callback function
+ * @param {callback} callback   callback function
  * @return
  *
  */
